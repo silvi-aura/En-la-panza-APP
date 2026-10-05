@@ -1,0 +1,7 @@
+Guardá acá las fotos de cada semana con estos nombres:
+semana-04.jpg, semana-05.jpg, semana-06.jpg ... hasta semana-41.jpg
+
+Siempre con dos cifras (04, 05, 06...).
+Si Gemini te las descarga como .png o .webp, no hace falta convertirlas:
+la app las encuentra igual, solo cambiá el nombre (por ejemplo, semana-04.png).
+Mientras falte una foto, la app muestra un dibujo de reemplazo.

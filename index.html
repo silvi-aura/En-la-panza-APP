@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crecer en la panza</title>
+<meta name="description" content="Tu embarazo semana a semana: cómo crece tu bebé, qué pasa en tu cuerpo y consejos para sentirte mejor.">
+<meta name="theme-color" content="#3C9A97">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="En la panza">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --crema:#FBF5EC; --arena:#F1E4D2; --superficie:#FFFFFF;
+  --cacao:#4A3226; --cacao-suave:#7A5E50; --linea:#E6D6C2;
+  --caramelo:#C98A4B; --caramelo-claro:#F6E6D3;
+  --turquesa:#3C9A97; --turquesa-osc:#2E7C79; --turquesa-claro:#DDF0EE;
+  --alerta:#B5473A; --alerta-claro:#FBE9E6;
+  --sombra:0 6px 20px rgba(74,50,38,.10);
+  --radio:18px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --crema:#211813; --arena:#2C211B; --superficie:#33271F;
+    --cacao:#F3E7DA; --cacao-suave:#CDB8A6; --linea:#4A3A30;
+    --caramelo:#E0A466; --caramelo-claro:#3D2E22;
+    --turquesa:#5CC2BE; --turquesa-osc:#7FD3CF; --turquesa-claro:#20403E;
+    --alerta:#F08A7C; --alerta-claro:#3E2420;
+    --sombra:0 6px 20px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--crema); color:var(--cacao);
+  font-family:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:16px; line-height:1.6; -webkit-tap-highlight-color:transparent;
+}
+h1,h2,h3{font-family:'Lora',Georgia,serif;font-weight:600;line-height:1.25}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+input{font:inherit;color:inherit}
+a{color:var(--turquesa-osc)}
+.app{max-width:540px;margin:0 auto;min-height:100%;padding:
+  calc(env(safe-area-inset-top) + 12px) 18px calc(env(safe-area-inset-bottom) + 96px)}
+.oculto{display:none!important}
+
+/* ---------- Cabecera ---------- */
+.cabecera{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.marca{font-family:'Lora',serif;font-size:1.15rem;font-weight:600;color:var(--turquesa-osc)}
+.saludo{font-size:.9rem;color:var(--cacao-suave)}
+
+/* ---------- Hero de la semana ---------- */
+.hero{position:relative;border-radius:24px;overflow:hidden;background:var(--arena);box-shadow:var(--sombra)}
+.hero-img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:var(--arena)}
+.hero-sinfoto{aspect-ratio:4/5;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;color:var(--cacao-suave);font-size:3.5rem;background:linear-gradient(160deg,var(--turquesa-claro),var(--caramelo-claro))}
+.hero-sinfoto span{font-size:.95rem}
+.hero-texto{position:absolute;left:0;right:0;bottom:0;padding:70px 20px 18px;
+  background:linear-gradient(to top,rgba(30,20,15,.82),rgba(30,20,15,0));color:#fff}
+.hero-num{font-family:'Lora',serif;font-size:3.2rem;line-height:1;font-weight:600}
+.hero-num small{font-size:1rem;font-family:'Poppins',sans-serif;font-weight:500;letter-spacing:.02em;display:block;opacity:.9;margin-bottom:2px}
+.hero-titulo{font-family:'Lora',serif;font-style:italic;font-size:1.25rem;margin-top:6px}
+.tamano{display:flex;gap:10px;align-items:center;margin:16px 0 6px;padding:12px 14px;border-radius:14px;background:var(--caramelo-claro)}
+.tamano b{font-weight:600}
+.tamano .sub{font-size:.85rem;color:var(--cacao-suave)}
+.progreso{margin:14px 0 4px}
+.progreso-barra{height:8px;border-radius:8px;background:var(--arena);overflow:hidden}
+.progreso-barra div{height:100%;background:linear-gradient(90deg,var(--turquesa),var(--caramelo));border-radius:8px}
+.progreso-info{display:flex;justify-content:space-between;font-size:.8rem;color:var(--cacao-suave);margin-top:6px}
+
+/* ---------- Bloques de contenido ---------- */
+.bloque{background:var(--superficie);border-radius:var(--radio);padding:18px 18px 16px;margin-top:14px;box-shadow:var(--sombra)}
+.bloque h2{font-size:1.2rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.bloque p{margin-bottom:10px}
+.bloque p:last-child{margin-bottom:0}
+.tips{list-style:none;display:grid;gap:10px}
+.tips li{padding:12px 14px;border-radius:14px;background:var(--turquesa-claro)}
+.tips b{display:block;color:var(--turquesa-osc);margin-bottom:2px}
+.alarma{background:var(--alerta-claro);box-shadow:none;border:1.5px solid var(--alerta)}
+.alarma h2{color:var(--alerta)}
+.alarma ul{padding-left:20px}
+.alarma li{margin-bottom:6px}
+.alarma .sub{font-size:.85rem;margin-top:8px;color:var(--cacao-suave)}
+.explorar{display:grid;gap:10px}
+.tarjeta{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px;border-radius:14px;
+  background:var(--crema);border:1px solid var(--linea)}
+.tarjeta .ico{font-size:1.6rem;flex:none}
+.tarjeta .t{font-weight:500;line-height:1.35}
+.tarjeta .flecha{margin-left:auto;color:var(--caramelo);font-size:1.2rem}
+.boton{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:999px;
+  font-weight:600;background:var(--turquesa);color:#fff;text-decoration:none;width:100%}
+.boton:active{transform:scale(.98)}
+.boton.sec{background:transparent;color:var(--turquesa-osc);border:2px solid var(--turquesa)}
+.boton.cara{background:var(--caramelo);color:#fff}
+.boton.peligro{background:transparent;color:var(--alerta);border:2px solid var(--alerta)}
+.pila{display:grid;gap:10px;margin-top:14px}
+.aviso{font-size:.8rem;color:var(--cacao-suave);text-align:center;margin:18px 6px 0;line-height:1.5}
+
+/* ---------- Bloqueo Premium ---------- */
+.candado{text-align:center;padding:22px 18px;border-radius:var(--radio);margin-top:14px;
+  background:linear-gradient(160deg,var(--caramelo-claro),var(--turquesa-claro))}
+.candado .ico{font-size:2rem}
+.candado h2{font-size:1.2rem;margin:6px 0}
+.candado p{font-size:.95rem;margin-bottom:12px;color:var(--cacao-suave)}
+
+/* ---------- Lista de semanas ---------- */
+.titulo-vista{font-size:1.6rem;margin:4px 0 6px}
+.bajada{color:var(--cacao-suave);margin-bottom:16px;font-size:.95rem}
+.trimestre{font-family:'Lora',serif;font-size:1.05rem;color:var(--caramelo);margin:18px 0 8px}
+.semanas-lista{display:grid;gap:8px}
+.fila-semana{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--superficie);
+  width:100%;text-align:left;box-shadow:var(--sombra)}
+.fila-semana .n{font-family:'Lora',serif;font-size:1.4rem;font-weight:600;width:42px;text-align:center;color:var(--turquesa-osc)}
+.fila-semana .d{flex:1;line-height:1.35}
+.fila-semana .d small{display:block;color:var(--cacao-suave);font-size:.8rem}
+.fila-semana.actual{outline:2px solid var(--turquesa)}
+.fila-semana.bloq{opacity:.55;box-shadow:none;background:var(--arena)}
+
+/* ---------- Biblioteca ---------- */
+.buscador{width:100%;padding:12px 16px;border-radius:999px;border:1.5px solid var(--linea);background:var(--superficie);margin-bottom:14px}
+
+/* ---------- Artículo y hojas ---------- */
+.capa{position:fixed;inset:0;background:var(--crema);z-index:40;overflow-y:auto;
+  padding:calc(env(safe-area-inset-top) + 12px) 0 calc(env(safe-area-inset-bottom) + 40px)}
+.capa .interior{max-width:540px;margin:0 auto;padding:0 18px}
+.volver{display:inline-flex;align-items:center;gap:6px;padding:8px 0;color:var(--turquesa-osc);font-weight:600;margin-bottom:6px}
+.articulo .ico-grande{font-size:2.6rem}
+.articulo h1{font-size:1.6rem;margin:6px 0 14px}
+.articulo p{margin-bottom:12px}
+.articulo ul{padding-left:20px;margin-bottom:12px}
+.articulo li{margin-bottom:6px}
+.fondo-hoja{position:fixed;inset:0;background:rgba(20,12,8,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.hoja{background:var(--crema);width:100%;max-width:540px;border-radius:24px 24px 0 0;padding:22px 20px calc(env(safe-area-inset-bottom) + 22px);
+  max-height:88vh;overflow-y:auto}
+.hoja h2{font-size:1.3rem;margin-bottom:8px}
+.hoja p{margin-bottom:12px;color:var(--cacao-suave)}
+.campo{display:block;margin-bottom:12px}
+.campo span{display:block;font-size:.9rem;font-weight:500;margin-bottom:4px}
+.campo input,.campo textarea{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--linea);background:var(--superficie);font:inherit;color:inherit}
+.opciones{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.opcion{padding:12px;border-radius:12px;border:1.5px solid var(--linea);background:var(--superficie);font-weight:500;font-size:.9rem}
+.opcion.activa{border-color:var(--turquesa);background:var(--turquesa-claro);color:var(--turquesa-osc)}
+.mensaje{font-size:.9rem;margin-top:8px}
+.mensaje.ok{color:var(--turquesa-osc)}
+.mensaje.error{color:var(--alerta)}
+
+/* ---------- Menú inferior y lupa ---------- */
+.menu{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--superficie);border-top:1px solid var(--linea);
+  padding:6px 8px calc(env(safe-area-inset-bottom) + 6px)}
+.menu div{max-width:540px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.menu button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:.72rem;color:var(--cacao-suave)}
+.menu button .i{font-size:1.35rem;line-height:1}
+.menu button.activo{color:var(--turquesa-osc);font-weight:600}
+.lupa{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom) + 84px);z-index:35;width:56px;height:56px;border-radius:50%;
+  background:var(--caramelo);color:#fff;font-size:1.5rem;box-shadow:0 8px 22px rgba(74,50,38,.3);display:flex;align-items:center;justify-content:center}
+
+/* ---------- Bienvenida ---------- */
+.bienvenida{text-align:center;padding-top:30px}
+.bienvenida .emblema{font-size:4rem}
+.bienvenida h1{font-size:2rem;margin:10px 0}
+.bienvenida > p{color:var(--cacao-suave);margin-bottom:22px}
+.bienvenida form{text-align:left}
+
+/* ---------- Pantallas especiales ---------- */
+.centro{text-align:center;padding:40px 10px}
+.centro .emblema{font-size:3.4rem}
+.centro h1{font-size:1.7rem;margin:10px 0}
+.centro p{color:var(--cacao-suave);margin-bottom:16px}
+.ajuste{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px;border-radius:14px;background:var(--superficie);box-shadow:var(--sombra)}
+.ajuste .i{font-size:1.4rem}
+.ajuste small{display:block;color:var(--cacao-suave);font-size:.8rem}
+.etiqueta{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:600;background:var(--turquesa-claro);color:var(--turquesa-osc)}
+.etiqueta.cara{background:var(--caramelo-claro);color:var(--caramelo)}
+.novedad .hoja{text-align:center}
+.novedad .emblema{font-size:3rem}
+:focus-visible{outline:3px solid var(--caramelo);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){
+  .fondo-hoja .hoja{animation:sube .28s ease-out}
+  @keyframes sube{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+}
+</style>
+</head>
+<body>
+<main class="app" id="app"></main>
+
+<nav class="menu oculto" id="menu" aria-label="Menú principal"><div>
+  <button data-vista="semana"><span class="i">🤰</span>Mi semana</button>
+  <button data-vista="semanas"><span class="i">🗓️</span>Semanas</button>
+  <button data-vista="biblioteca"><span class="i">📚</span>Biblioteca</button>
+  <button data-vista="mas"><span class="i">☰</span>Más</button>
+</div></nav>
+
+<button class="lupa oculto" id="lupa" aria-label="Buscar en internet">🔍</button>
+<div id="capas"></div>
+
+<script src="contenido.js"></script>
+<script>
+/* ============================================================
+   CONFIGURACIÓN · lo único que hay que completar
+   ============================================================ */
+const CONFIG = {
+  // Link "/exec" del Apps Script de la planilla "Suscriptoras de Crecer en la panza"
+  verifyEndpoint: "",
+  // Link de pago del producto en Hotmart
+  checkoutHotmart: "",
+  // WhatsApp para dudas (agente de Scalechat)
+  whatsapp: "https://wa.me/5493492418616",
+  // Días gratis desde que la mamá se registra
+  diasGratis: 28
+};
+
+/* ============================================================
+   ESTADO (se guarda en el celular de la mamá)
+   ============================================================ */
+const CLAVE_ESTADO = "crecer-en-la-panza";
+const S = window.SEMANAS, B = window.BIBLIOTECA, P = window.POSPARTO, PR = window.PREMATURO, M = window.MENSAJES;
+const DIA = 86400000;
+
+let estado = cargar();
+let vista = "semana";
+let semanaVista = null;          // semana que se está mirando (null = la actual)
+let ultimaSeleccion = "";        // texto seleccionado para la lupa
+let eventoInstalar = null;
+
+// Artículos de seguridad: se pueden leer siempre, con o sin suscripción
+const ARTICULOS_LIBRES = ["preeclampsia", "parto-prematuro-signos", "signos-de-trabajo-de-parto",
+  "movimientos-del-bebe", "alarma-recien-nacido", "baby-blues-y-depresion-posparto"].concat(window.PREMATURO.explorar);
+
+function cargar(){
+  try { return JSON.parse(localStorage.getItem(CLAVE_ESTADO)) || {}; }
+  catch(e){ return {}; }
+}
+function guardar(){
+  try { localStorage.setItem(CLAVE_ESTADO, JSON.stringify(estado)); } catch(e){}
+}
+
+/* ---------- Fechas ---------- */
+function hoy(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
+function aFecha(txt){ const [a,m,d] = txt.split("-").map(Number); return new Date(a, m-1, d); }
+function aTexto(f){ return f.getFullYear()+"-"+String(f.getMonth()+1).padStart(2,"0")+"-"+String(f.getDate()).padStart(2,"0"); }
+function sumarDias(f, n){ const r = new Date(f); r.setDate(r.getDate()+n); return r; }
+function diasEntre(a, b){ return Math.round((b - a) / DIA); }
+function fechaLarga(f){ return f.toLocaleDateString("es-AR", { day:"numeric", month:"long", year:"numeric" }); }
+
+function fum(){ return aFecha(estado.fum); }
+function fpp(){ return sumarDias(fum(), 280); }
+function semanaReal(){ return Math.floor(diasEntre(fum(), hoy()) / 7); }
+function semanaContenido(){ return Math.min(41, Math.max(4, semanaReal())); }
+
+/* ---------- Acceso Premium ---------- */
+function diasGratisRestantes(){
+  if (!estado.registro) return 0;
+  return CONFIG.diasGratis - diasEntre(aFecha(estado.registro), hoy());
+}
+function enPrueba(){ return diasGratisRestantes() > 0; }
+function tieneAcceso(){ return enPrueba() || estado.premium === true; }
+
+async function verificarEmail(email){
+  if (!CONFIG.verifyEndpoint) throw new Error("sin-config");
+  const r = await fetch(CONFIG.verifyEndpoint + "?email=" + encodeURIComponent(email.trim().toLowerCase()), { cache:"no-store" });
+  const datos = await r.json();
+  return datos.active === true;
+}
+async function revalidarPremium(){
+  if (!estado.emailPremium || !CONFIG.verifyEndpoint || !navigator.onLine) return;
+  try {
+    const activa = await verificarEmail(estado.emailPremium);
+    if (estado.premium !== activa){ estado.premium = activa; guardar(); render(); }
+  } catch(e){ /* sin conexión: se mantiene el último estado */ }
+}
+
+/* ============================================================
+   UTILIDADES DE INTERFAZ
+   ============================================================ */
+const app = document.getElementById("app");
+const capas = document.getElementById("capas");
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+
+function imagen(ruta, alt, emoji){
+  // Prueba .jpg, .png, .jpeg y .webp, por si la foto se guardó con otra extensión
+  const base = ruta.replace(/\.(jpg|jpeg|png|webp)$/i, "");
+  return `<img class="hero-img" src="${base}.jpg" alt="${esc(alt)}" data-base="${base}" data-intento="0"
+    onerror="probarOtra(this)" data-emoji="${emoji||"🤰"}">`;
+}
+window.probarOtra = function(img){
+  const ext = ["jpg","png","jpeg","webp"];
+  const i = Number(img.dataset.intento) + 1;
+  if (i < ext.length){ img.dataset.intento = i; img.src = img.dataset.base + "." + ext[i]; return; }
+  const ph = document.createElement("div");
+  ph.className = "hero-sinfoto";
+  ph.innerHTML = img.dataset.emoji + "<span>La imagen de esta semana llega pronto</span>";
+  img.replaceWith(ph);
+};
+
+function bloqueAlarma(lista, titulo){
+  return `<section class="bloque alarma">
+    <h2>🚨 ${titulo || "Consultá enseguida si…"}</h2>
+    <ul>${lista.map(a => `<li>${esc(a)}</li>`).join("")}</ul>
+  </section>`;
+}
+function bloqueTips(tips){
+  return `<section class="bloque"><h2>💡 Para sentirte mejor</h2>
+    <ul class="tips">${tips.map(([t,d]) => `<li><b>${esc(t)}</b>${esc(d)}</li>`).join("")}</ul></section>`;
+}
+function bloqueExplorar(ids){
+  return `<section class="bloque"><h2>📖 Para explorar</h2><div class="explorar">
+    ${ids.filter(id => B[id]).map(id => `<button class="tarjeta" data-articulo="${id}">
+      <span class="ico">${B[id].icono}</span><span class="t">${esc(B[id].titulo)}</span><span class="flecha">›</span></button>`).join("")}
+  </div></section>`;
+}
+function botonLeeMas(lm){
+  if (!lm || !lm.url) return "";
+  return `<a class="boton sec" href="${lm.url}" target="_blank" rel="noopener">🌐 Leé más: ${esc(lm.texto)}</a>`;
+}
+function bloqueCandado(){
+  const link = CONFIG.checkoutHotmart
+    ? `<a class="boton cara" href="${CONFIG.checkoutHotmart}" target="_blank" rel="noopener">✨ Suscribirme</a>`
+    : `<button class="boton cara" data-accion="premium">✨ Suscribirme</button>`;
+  return `<section class="candado">
+    <div class="ico">🔒</div>
+    <h2>Seguí acompañándote cada semana</h2>
+    <p>Tus semanas gratis terminaron. Suscribite para ver todo el contenido de cada semana, la Biblioteca completa y las semanas anteriores.</p>
+    <div class="pila">${link}
+      <button class="boton sec" data-accion="premium">Ya me suscribí</button></div>
+  </section>`;
+}
+function avisoFinal(){
+  return `<p class="aviso">${esc(M.medidas)}<br>${esc(M.aviso)}</p>`;
+}
+
+/* ============================================================
+   VISTAS
+   ============================================================ */
+function render(){
+  const menu = document.getElementById("menu"), lupa = document.getElementById("lupa");
+  if (!estado.fum){ menu.classList.add("oculto"); lupa.classList.add("oculto"); return vistaBienvenida(); }
+  menu.classList.remove("oculto"); lupa.classList.remove("oculto");
+  menu.querySelectorAll("button").forEach(b => b.classList.toggle("activo", b.dataset.vista === vista));
+
+  if (estado.pausada && vista === "semana") return vistaPausa();
+  if (vista === "semanas") return vistaSemanas();
+  if (vista === "biblioteca") return vistaBiblioteca();
+  if (vista === "mas") return vistaMas();
+  if (estado.nacimiento) return vistaPosparto();
+  return vistaSemana();
+}
+
+/* ---------- Bienvenida ---------- */
+function vistaBienvenida(){
+  const modo = estado._modo || "fum";
+  app.innerHTML = `<section class="bienvenida">
+    <div class="emblema">🤰</div>
+    <h1>${esc(M.bienvenida.titulo)}</h1>
+    <p>${esc(M.bienvenida.texto)}</p>
+    <form id="form-inicio" class="bloque">
+      <label class="campo"><span>¿Cómo te llamás? (opcional)</span><input id="nombre" autocomplete="given-name" placeholder="Tu nombre"></label>
+      <div class="opciones">
+        <button type="button" class="opcion ${modo==="fum"?"activa":""}" data-modo="fum">Sé mi última menstruación</button>
+        <button type="button" class="opcion ${modo==="fpp"?"activa":""}" data-modo="fpp">Sé mi fecha de parto</button>
+      </div>
+      <label class="campo"><span>${modo==="fum" ? "Primer día de tu última menstruación" : "Fecha probable de parto"}</span>
+        <input type="date" id="fecha" required></label>
+      <p class="mensaje error oculto" id="error-inicio"></p>
+      <button class="boton" type="submit">Empezar 💛</button>
+      <p class="aviso">Tenés ${Math.round(CONFIG.diasGratis/7)} semanas gratis para conocer la app.</p>
+    </form>
+  </section>`;
+  if (estado._nombreTmp) document.getElementById("nombre").value = estado._nombreTmp;
+  app.querySelectorAll("[data-modo]").forEach(b => b.onclick = () => {
+    estado._nombreTmp = document.getElementById("nombre").value; estado._modo = b.dataset.modo; vistaBienvenida(); });
+  document.getElementById("form-inicio").onsubmit = e => {
+    e.preventDefault();
+    const valor = document.getElementById("fecha").value;
+    const err = document.getElementById("error-inicio");
+    if (!valor){ err.textContent = "Elegí una fecha."; err.classList.remove("oculto"); return; }
+    const f = aFecha(valor);
+    const fumCalc = (estado._modo === "fpp") ? sumarDias(f, -280) : f;
+    const sem = Math.floor(diasEntre(fumCalc, hoy()) / 7);
+    if (sem < 0 || sem > 43){ err.textContent = "Revisá la fecha: no parece corresponder a un embarazo en curso."; err.classList.remove("oculto"); return; }
+    estado.fum = aTexto(fumCalc);
+    estado.nombre = document.getElementById("nombre").value.trim();
+    estado.registro = aTexto(hoy());
+    estado.ultimaSemanaVista = semanaContenido();
+    delete estado._modo; delete estado._nombreTmp;
+    guardar(); vista = "semana"; render();
+  };
+}
+
+/* ---------- Semana ---------- */
+function vistaSemana(){
+  const actual = semanaContenido();
+  const n = semanaVista || actual;
+  const s = S[n];
+  const real = semanaReal();
+  const acceso = tieneAcceso();
+  const restantes = diasEntre(hoy(), fpp());
+  const porcentaje = Math.min(100, Math.max(2, Math.round(diasEntre(fum(), hoy()) / 280 * 100)));
+  const mirandoOtra = semanaVista && semanaVista !== actual;
+  const parrafos = s.bebe.split("</p>").filter(t => t.trim()).map(t => t + "</p>");
+
+  let html = `<header class="cabecera">
+      <span class="marca">Crecer en la panza</span>
+      <span class="saludo">${estado.nombre ? "Hola, " + esc(estado.nombre) + " 💛" : ""}</span>
+    </header>`;
+
+  if (mirandoOtra) html += `<button class="volver" data-accion="semana-actual">‹ Volver a mi semana</button>`;
+  if (real < 4 && !mirandoOtra) html += `<p class="bajada">Tu contenido empieza en la semana 4. Mientras tanto, te mostramos lo que viene. 🌱</p>`;
+
+  html += `<section class="hero">${imagen(s.imagen, "Ilustración de la semana " + n, "🤰")}
+      <div class="hero-texto"><div class="hero-num"><small>Semana</small>${n}</div><div class="hero-titulo">${esc(s.titulo)}</div></div>
+    </section>
+    <div class="tamano"><span style="font-size:1.6rem">📏</span><div><b>${esc(s.tamano)}</b><div class="sub">${esc(s.medida)}</div></div></div>`;
+
+  if (!mirandoOtra){
+    html += `<div class="progreso"><div class="progreso-barra"><div style="width:${porcentaje}%"></div></div>
+      <div class="progreso-info"><span>${trimestre(n)}</span><span>${restantes > 0 ? "Faltan " + restantes + " días" : "¡Llegó tu fecha!"}</span></div></div>`;
+    if (enPrueba() && !estado.premium) html += `<p class="aviso" style="margin-top:6px"><span class="etiqueta cara">Te quedan ${diasGratisRestantes()} días gratis</span></p>`;
+  }
+
+  if (acceso){
+    html += `<section class="bloque"><h2>👶 Tu bebé esta semana</h2>${s.bebe}</section>
+      <section class="bloque"><h2>🤍 Tu cuerpo esta semana</h2>${s.cuerpo}</section>
+      ${bloqueTips(s.tips)}
+      <section class="bloque"><h2>📌 Un pendiente de esta semana</h2>${s.pendiente}</section>
+      ${bloqueAlarma(s.alarma)}
+      ${bloqueExplorar(s.explorar)}`;
+  } else {
+    html += `<section class="bloque"><h2>👶 Tu bebé esta semana</h2>${parrafos[0] || ""}</section>
+      ${bloqueAlarma(s.alarma)}
+      ${bloqueCandado()}`;
+  }
+
+  html += `<div class="pila">${botonLeeMas(s.leeMas)}`;
+  if (n >= 20 && !mirandoOtra) html += `<button class="boton sec" data-accion="ya-nacio">👶 ¡Ya nació!</button>`;
+  html += `</div>${avisoFinal()}`;
+
+  app.innerHTML = html;
+  if (!mirandoOtra) mostrarNovedad(actual);
+}
+function trimestre(n){ return n <= 13 ? "Primer trimestre" : n <= 27 ? "Segundo trimestre" : "Tercer trimestre"; }
+
+/* ---------- Lista de semanas ---------- */
+function vistaSemanas(){
+  const actual = estado.nacimiento ? 41 : semanaContenido();
+  const acceso = tieneAcceso();
+  const grupos = [["Primer trimestre",4,13],["Segundo trimestre",14,27],["Tercer trimestre",28,41]];
+  let html = `<h1 class="titulo-vista">Tus semanas</h1>
+    <p class="bajada">Cada semana se desbloquea cuando llegás a ella. ${acceso ? "" : "Con la suscripción podés volver a leer las anteriores."}</p>`;
+  grupos.forEach(([nombre, desde, hasta]) => {
+    html += `<h2 class="trimestre">${nombre}</h2><div class="semanas-lista">`;
+    for (let n = desde; n <= hasta; n++){
+      const s = S[n];
+      const futura = n > actual;
+      const bloq = futura || (!acceso && n !== actual);
+      let detalle = futura ? "Se desbloquea en " + diasHasta(n) + " días" : esc(s.tamano);
+      if (!futura && bloq) detalle = "🔒 Con suscripción";
+      html += `<button class="fila-semana ${n === actual && !estado.nacimiento ? "actual" : ""} ${bloq ? "bloq" : ""}"
+          ${bloq ? "disabled" : `data-semana="${n}"`}>
+        <span class="n">${n}</span><span class="d">${esc(s.titulo)}<small>${detalle}</small></span>
+        ${bloq ? "" : '<span class="flecha" style="color:var(--caramelo)">›</span>'}</button>`;
+    }
+    html += `</div>`;
+  });
+  app.innerHTML = html;
+}
+function diasHasta(n){ return Math.max(1, diasEntre(hoy(), sumarDias(fum(), n * 7))); }
+
+/* ---------- Biblioteca ---------- */
+function vistaBiblioteca(filtro){
+  const acceso = tieneAcceso();
+  const f = (filtro || "").toLowerCase();
+  const ids = Object.keys(B).filter(id => !f || B[id].titulo.toLowerCase().includes(f) || B[id].html.toLowerCase().includes(f))
+    .sort((a,b) => B[a].titulo.localeCompare(B[b].titulo, "es"));
+  app.innerHTML = `<h1 class="titulo-vista">Biblioteca</h1>
+    <p class="bajada">${Object.keys(B).length} artículos para leer cuando quieras.${acceso ? "" : " 🔒 Disponibles con la suscripción."}</p>
+    <input class="buscador" id="buscar-bib" type="search" placeholder="Buscar un tema…" value="${esc(filtro||"")}">
+    <div class="explorar">${ids.map(id => `<button class="tarjeta" data-articulo="${id}">
+      <span class="ico">${B[id].icono}</span><span class="t">${esc(B[id].titulo)}</span>
+      <span class="flecha">${acceso || ARTICULOS_LIBRES.includes(id) ? "›" : "🔒"}</span></button>`).join("") || '<p class="bajada">No encontramos ese tema. Probá con la lupa 🔍 para buscar en internet.</p>'}</div>`;
+  const input = document.getElementById("buscar-bib");
+  input.oninput = () => { const v = input.value; vistaBiblioteca(v); const i = document.getElementById("buscar-bib"); i.focus(); i.setSelectionRange(v.length, v.length); };
+}
+
+/* ---------- Más ---------- */
+function vistaMas(){
+  const premium = estado.premium === true;
+  const estadoAcceso = premium ? '<span class="etiqueta">Suscripción activa</span>'
+    : enPrueba() ? `<span class="etiqueta cara">${diasGratisRestantes()} días gratis</span>` : '<span class="etiqueta cara">Sin suscripción</span>';
+  app.innerHTML = `<h1 class="titulo-vista">Más</h1>
+    <p class="bajada">${estado.nacimiento ? "Tu bebé nació el " + fechaLarga(aFecha(estado.nacimiento)) : "Fecha probable de parto: " + fechaLarga(fpp())}</p>
+    <div class="pila">
+      <button class="ajuste" data-accion="premium"><span class="i">👑</span><span>Mi suscripción<small>${estadoAcceso}</small></span></button>
+      <button class="ajuste" data-accion="buscar"><span class="i">🔍</span><span>Buscar en internet<small>Abre Google en tu navegador</small></span></button>
+      <a class="ajuste" href="${CONFIG.whatsapp}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="i">💬</span><span>¿Tenés dudas?<small>Escribinos por WhatsApp</small></span></a>
+      ${estado.nacimiento ? "" : '<button class="ajuste" data-accion="ya-nacio"><span class="i">👶</span><span>¡Ya nació!<small>Pasá a las semanas de posparto</small></span></button>'}
+      <button class="ajuste" data-accion="datos"><span class="i">📅</span><span>Mis datos<small>Nombre y fechas</small></span></button>
+      <button class="ajuste" data-accion="instalar"><span class="i">📲</span><span>Instalar en el celular<small>Para abrirla como una app</small></span></button>
+      <button class="ajuste" data-accion="pausa"><span class="i">🕊️</span><span>${estado.pausada ? "Reactivar la app" : "Pausar la app"}<small>${estado.pausada ? "Volver a ver tus semanas" : "Si tu embarazo no siguió"}</small></span></button>
+    </div>
+    ${avisoFinal()}`;
+}
+
+/* ---------- Pausa ---------- */
+function vistaPausa(){
+  app.innerHTML = `<section class="centro"><div class="emblema">🕊️</div>
+    <h1>La app está en pausa</h1>
+    <p>${esc(M.pausa.texto)}</p>
+    <div class="pila"><button class="boton sec" data-accion="reactivar">Reactivar la app</button></div></section>`;
+}
+
+/* ---------- Posparto ---------- */
+function vistaPosparto(){
+  const nac = aFecha(estado.nacimiento);
+  const dias = diasEntre(nac, hoy());
+  if (dias >= 14 && !semanaVista) return vistaFinal();
+  const n = (semanaVista === 1 || semanaVista === 2) ? semanaVista : (dias < 7 ? 1 : 2);
+  const p = P[n];
+  const prematuro = estado.semanaNacimiento && estado.semanaNacimiento < 37;
+  const acceso = tieneAcceso();
+  const mirandoOtra = semanaVista && dias >= 14;
+
+  let html = `<header class="cabecera"><span class="marca">Crecer en la panza</span>
+      <span class="saludo">${estado.nombre ? "Hola, " + esc(estado.nombre) + " 💛" : ""}</span></header>`;
+  if (mirandoOtra) html += `<button class="volver" data-accion="semana-actual">‹ Volver</button>`;
+  html += `<section class="hero">${imagen(p.imagen, "Posparto semana " + n, "👶")}
+      <div class="hero-texto"><div class="hero-num"><small>Posparto, semana</small>${n}</div><div class="hero-titulo">${esc(p.titulo)}</div></div></section>
+    <div class="tamano"><span style="font-size:1.6rem">🎂</span><div><b>${dias === 0 ? "¡Nació hoy!" : "Tiene " + dias + (dias === 1 ? " día" : " días")}</b>
+      <div class="sub">Nació el ${fechaLarga(nac)}${estado.semanaNacimiento ? ", en la semana " + estado.semanaNacimiento : ""}</div></div></div>`;
+
+  if (prematuro){
+    html += `<section class="bloque"><h2>💛 ${esc(PR.titulo)}</h2>${PR.html}</section>${bloqueExplorar(PR.explorar)}`;
+  }
+  html += bloqueAlarma(p.alarmaBebe, "Llevalo a la guardia si tu bebé…");
+  html += bloqueAlarma(p.alarma, "Consultá enseguida si vos…");
+
+  if (acceso){
+    html += `<section class="bloque"><h2>👶 Tu bebé esta semana</h2>${p.bebe}</section>
+      <section class="bloque"><h2>🤍 Tu cuerpo esta semana</h2>${p.cuerpo}</section>
+      ${bloqueTips(p.tips)}
+      <section class="bloque"><h2>📌 Un pendiente de esta semana</h2>${p.pendiente}</section>
+      ${bloqueExplorar(p.explorar)}`;
+  } else {
+    html += bloqueCandado();
+  }
+  html += `<div class="pila">${botonLeeMas(p.leeMas)}</div>${avisoFinal()}`;
+  app.innerHTML = html;
+}
+
+/* ---------- Final ---------- */
+function vistaFinal(){
+  app.innerHTML = `<section class="centro"><div class="emblema">🌱</div>
+    <h1>${esc(M.final.titulo)}</h1>
+    <p>${esc(M.final.texto)}</p>
+    <div class="pila">
+      <a class="boton cara" href="${M.final.url}" target="_blank" rel="noopener">${esc(M.final.boton)}</a>
+      <button class="boton sec" data-ver-posparto="1">Volver a leer el posparto · semana 1</button>
+      <button class="boton sec" data-ver-posparto="2">Volver a leer el posparto · semana 2</button>
+    </div></section>${avisoFinal()}`;
+}
+
+/* ============================================================
+   CAPAS: artículo, hojas y novedad
+   ============================================================ */
+function abrirArticulo(id){
+  const a = B[id];
+  if (!a) return;
+  if (!tieneAcceso() && !ARTICULOS_LIBRES.includes(id)){ return hojaPremium(); }
+  capas.innerHTML = `<div class="capa"><div class="interior articulo">
+    <button class="volver" data-cerrar>‹ Volver</button>
+    <div class="ico-grande">${a.icono}</div><h1>${esc(a.titulo)}</h1>${a.html}
+    <div class="pila"><button class="boton sec" data-accion="buscar">🔍 Buscar más sobre esto en internet</button></div>
+    ${avisoFinal()}</div></div>`;
+  capas.querySelector(".capa").scrollTop = 0;
+}
+function hoja(html){
+  capas.innerHTML = `<div class="fondo-hoja" data-cerrar-fondo><div class="hoja" role="dialog" aria-modal="true">${html}</div></div>`;
+}
+function cerrarCapas(){ capas.innerHTML = ""; }
+
+function hojaBuscar(){
+  const texto = ultimaSeleccion;
+  hoja(`<h2>🔍 Buscar en internet</h2>
+    <p>Escribí tu duda o mantené apretada una frase de la app para seleccionarla antes de tocar la lupa.</p>
+    <label class="campo"><span>¿Qué querés buscar?</span><input id="q" value="${esc(texto)}" placeholder="Ej: dolor de espalda"></label>
+    <p class="mensaje">${esc(M.lupa)}</p>
+    <div class="pila"><button class="boton" id="ir-buscar">Buscar en Google</button>
+      <button class="boton sec" data-cerrar>Cancelar</button></div>`);
+  const q = document.getElementById("q");
+  if (!texto) setTimeout(() => q.focus(), 150);
+  document.getElementById("ir-buscar").onclick = () => {
+    const v = q.value.trim();
+    const consulta = v ? (v.toLowerCase().includes("embarazo") ? v : v + " embarazo") : "embarazo semana a semana";
+    window.open("https://www.google.com/search?q=" + encodeURIComponent(consulta), "_blank", "noopener");
+    ultimaSeleccion = ""; cerrarCapas();
+  };
+}
+
+function hojaPremium(){
+  const premium = estado.premium === true;
+  const pagar = CONFIG.checkoutHotmart
+    ? `<a class="boton cara" href="${CONFIG.checkoutHotmart}" target="_blank" rel="noopener">✨ Suscribirme</a>` : "";
+  hoja(`<h2>👑 Mi suscripción</h2>
+    ${premium ? `<p>Tu suscripción está activa con el correo <b>${esc(estado.emailPremium)}</b>. ¡Gracias! 💛</p>`
+      : enPrueba() ? `<p>Te quedan <b>${diasGratisRestantes()} días gratis</b>. Después, con la suscripción vas a seguir recibiendo todo el contenido de cada semana.</p>`
+      : `<p>Tus semanas gratis terminaron. Con la suscripción ves el contenido completo de cada semana, la Biblioteca y las semanas anteriores.</p>`}
+    ${premium ? "" : pagar}
+    <h2 style="font-size:1.05rem;margin-top:18px">¿Ya te suscribiste?</h2>
+    <p>Ingresá el correo con el que pagaste en Hotmart.</p>
+    <label class="campo"><span>Tu correo</span><input id="email-premium" type="email" autocomplete="email" value="${esc(estado.emailPremium||"")}" placeholder="tucorreo@ejemplo.com"></label>
+    <p class="mensaje oculto" id="msg-premium"></p>
+    <div class="pila"><button class="boton" id="validar">Validar acceso</button>
+      <a class="boton sec" href="${CONFIG.whatsapp}" target="_blank" rel="noopener">💬 Tengo dudas</a>
+      <button class="boton sec" data-cerrar>Cerrar</button></div>`);
+  document.getElementById("validar").onclick = async () => {
+    const email = document.getElementById("email-premium").value.trim();
+    const msg = document.getElementById("msg-premium");
+    const mostrar = (t, ok) => { msg.textContent = t; msg.className = "mensaje " + (ok ? "ok" : "error"); };
+    if (!/^\S+@\S+\.\S+$/.test(email)) return mostrar("Revisá que el correo esté bien escrito.", false);
+    mostrar("Verificando…", true);
+    try {
+      const activa = await verificarEmail(email);
+      if (activa){
+        estado.premium = true; estado.emailPremium = email.toLowerCase(); guardar();
+        mostrar("¡Listo! Tu suscripción está activa. 💛", true);
+        setTimeout(() => { cerrarCapas(); render(); }, 1200);
+      } else {
+        mostrar("No encontramos una suscripción activa con ese correo. Revisá que sea el mismo que usaste en Hotmart, o escribinos por WhatsApp.", false);
+      }
+    } catch(e){
+      mostrar(e.message === "sin-config" ? "La validación todavía no está disponible. Escribinos por WhatsApp." : "No pudimos verificar. Revisá tu conexión y volvé a intentar.", false);
+    }
+  };
+}
+
+function hojaYaNacio(){
+  hoja(`<h2>👶 ¡Ya nació!</h2>
+    <p>${esc(M.yaNacio)}</p>
+    <label class="campo"><span>Fecha de nacimiento</span><input id="f-nac" type="date" max="${aTexto(hoy())}" value="${aTexto(hoy())}"></label>
+    <p class="mensaje error oculto" id="msg-nac"></p>
+    <div class="pila"><button class="boton" id="confirmar-nac">Confirmar</button><button class="boton sec" data-cerrar>Cancelar</button></div>`);
+  document.getElementById("confirmar-nac").onclick = () => {
+    const v = document.getElementById("f-nac").value;
+    const msg = document.getElementById("msg-nac");
+    if (!v){ msg.textContent = "Elegí la fecha."; msg.classList.remove("oculto"); return; }
+    const f = aFecha(v);
+    if (f > hoy()){ msg.textContent = "La fecha no puede ser futura."; msg.classList.remove("oculto"); return; }
+    estado.nacimiento = v;
+    estado.semanaNacimiento = Math.floor(diasEntre(fum(), f) / 7);
+    guardar(); cerrarCapas(); semanaVista = null; vista = "semana"; render(); window.scrollTo(0,0);
+  };
+}
+
+function hojaDatos(){
+  hoja(`<h2>📅 Mis datos</h2>
+    <label class="campo"><span>Tu nombre</span><input id="d-nombre" value="${esc(estado.nombre||"")}"></label>
+    <label class="campo"><span>Fecha probable de parto</span><input id="d-fpp" type="date" value="${aTexto(fpp())}"></label>
+    <p>Si tu médico o médica te dio otra fecha por ecografía, cambiala acá para que las semanas coincidan.</p>
+    ${estado.nacimiento ? `<label class="campo"><span>Fecha de nacimiento</span><input id="d-nac" type="date" max="${aTexto(hoy())}" value="${estado.nacimiento}"></label>` : ""}
+    <div class="pila"><button class="boton" id="guardar-datos">Guardar</button>
+      ${estado.nacimiento ? '<button class="boton sec" id="deshacer-nac">Todavía no nació (me equivoqué)</button>' : ""}
+      <button class="boton peligro" id="borrar-todo">Borrar mis datos y empezar de nuevo</button>
+      <button class="boton sec" data-cerrar>Cerrar</button></div>`);
+  document.getElementById("guardar-datos").onclick = () => {
+    estado.nombre = document.getElementById("d-nombre").value.trim();
+    const nuevaFpp = document.getElementById("d-fpp").value;
+    if (nuevaFpp) estado.fum = aTexto(sumarDias(aFecha(nuevaFpp), -280));
+    const nac = document.getElementById("d-nac");
+    if (nac && nac.value){ estado.nacimiento = nac.value; estado.semanaNacimiento = Math.floor(diasEntre(fum(), aFecha(nac.value)) / 7); }
+    guardar(); cerrarCapas(); render();
+  };
+  const desh = document.getElementById("deshacer-nac");
+  if (desh) desh.onclick = () => { delete estado.nacimiento; delete estado.semanaNacimiento; guardar(); cerrarCapas(); render(); };
+  document.getElementById("borrar-todo").onclick = () => {
+    if (confirm("¿Seguro? Se borran tus fechas y tu progreso en este celular.")){
+      const email = estado.emailPremium, premium = estado.premium;
+      estado = {}; if (premium){ estado.emailPremium = email; estado.premium = premium; }
+      guardar(); cerrarCapas(); vista = "semana"; render();
+    }
+  };
+}
+
+function hojaPausa(){
+  if (estado.pausada){ estado.pausada = false; guardar(); vista = "semana"; return render(); }
+  hoja(`<h2>🕊️ ${esc(M.pausa.titulo)}</h2><p>${esc(M.pausa.texto)}</p>
+    <div class="pila"><button class="boton" id="confirmar-pausa">Pausar la app</button><button class="boton sec" data-cerrar>Cancelar</button></div>`);
+  document.getElementById("confirmar-pausa").onclick = () => { estado.pausada = true; guardar(); cerrarCapas(); vista = "semana"; render(); };
+}
+
+function hojaInstalar(){
+  if (eventoInstalar){
+    eventoInstalar.prompt();
+    eventoInstalar.userChoice.finally(() => { eventoInstalar = null; });
+    return;
+  }
+  hoja(`<h2>📲 Instalar en el celular</h2>
+    <p><b>En Android (Chrome):</b> tocá los tres puntitos de arriba a la derecha y elegí "Instalar aplicación" o "Agregar a la pantalla principal".</p>
+    <p><b>En iPhone (Safari):</b> tocá el botón Compartir (el cuadrado con la flecha) y elegí "Agregar a inicio".</p>
+    <p>Así vas a tener Crecer en la panza en tu pantalla, como cualquier otra app.</p>
+    <div class="pila"><button class="boton sec" data-cerrar>Entendido</button></div>`);
+}
+
+function mostrarNovedad(actual){
+  if (semanaReal() < 4) return;
+  const vista_ = estado.ultimaSemanaVista || 0;
+  if (actual <= vista_) return;
+  estado.ultimaSemanaVista = actual; guardar();
+  capas.innerHTML = `<div class="fondo-hoja novedad" data-cerrar-fondo><div class="hoja" role="dialog" aria-modal="true">
+    <div class="emblema">🎉</div><h2>¡Nueva semana!</h2><p>${esc(S[actual].notificacion)}</p>
+    <div class="pila"><button class="boton" data-cerrar>Ver mi semana</button></div></div></div>`;
+}
+
+/* ============================================================
+   EVENTOS
+   ============================================================ */
+document.getElementById("menu").addEventListener("click", e => {
+  const b = e.target.closest("button[data-vista]"); if (!b) return;
+  vista = b.dataset.vista; semanaVista = null; cerrarCapas(); render(); window.scrollTo(0,0);
+});
+document.getElementById("lupa").addEventListener("click", hojaBuscar);
+
+document.addEventListener("selectionchange", () => {
+  const t = String(window.getSelection() || "").trim();
+  if (t) ultimaSeleccion = t.slice(0, 120);
+});
+
+document.addEventListener("click", e => {
+  const art = e.target.closest("[data-articulo]");
+  if (art){ abrirArticulo(art.dataset.articulo); return; }
+  const sem = e.target.closest("[data-semana]");
+  if (sem){ semanaVista = Number(sem.dataset.semana); vista = "semana";
+    renderSemanaElegida(); window.scrollTo(0,0); return; }
+  const pp = e.target.closest("[data-ver-posparto]");
+  if (pp){ semanaVista = Number(pp.dataset.verPosparto); vistaPosparto(); window.scrollTo(0,0); return; }
+  if (e.target.closest("[data-cerrar]")){ cerrarCapas(); return; }
+  if (e.target.matches("[data-cerrar-fondo]")){ cerrarCapas(); return; }
+  const acc = e.target.closest("[data-accion]"); if (!acc) return;
+  const a = acc.dataset.accion;
+  if (a === "premium") hojaPremium();
+  else if (a === "buscar") hojaBuscar();
+  else if (a === "ya-nacio") hojaYaNacio();
+  else if (a === "datos") hojaDatos();
+  else if (a === "pausa") hojaPausa();
+  else if (a === "instalar") hojaInstalar();
+  else if (a === "reactivar"){ estado.pausada = false; guardar(); render(); }
+  else if (a === "semana-actual"){ semanaVista = null; render(); window.scrollTo(0,0); }
+});
+
+function renderSemanaElegida(){
+  // Desde la lista de semanas se puede releer una semana de embarazo aunque el bebé ya haya nacido
+  const menu = document.getElementById("menu");
+  menu.querySelectorAll("button").forEach(b => b.classList.toggle("activo", b.dataset.vista === "semanas"));
+  vistaSemana();
+}
+
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); eventoInstalar = e; });
+window.addEventListener("online", revalidarPremium);
+
+if ("serviceWorker" in navigator){
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+
+render();
+revalidarPremium();
+</script>
+</body>
+</html>
