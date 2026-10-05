@@ -208,8 +208,8 @@ const CONFIG = {
   verifyEndpoint: "",
   // Link de pago del producto en Hotmart
   checkoutHotmart: "",
-  // WhatsApp para dudas (agente de Scalechat)
-  whatsapp: "https://wa.me/5493492418616",
+  // Mail para consultas de las compradoras
+  email: "silvi_y@hotmail.com",
   // Días gratis desde que la mamá se registra
   diasGratis: 28
 };
@@ -272,6 +272,10 @@ async function revalidarPremium(){
     const activa = await verificarEmail(estado.emailPremium);
     if (estado.premium !== activa){ estado.premium = activa; guardar(); render(); }
   } catch(e){ /* sin conexión: se mantiene el último estado */ }
+}
+
+function mailContacto(){
+  return "mailto:" + CONFIG.email + "?subject=" + encodeURIComponent("Consulta sobre Crecer en la panza");
 }
 
 /* ============================================================
@@ -497,7 +501,7 @@ function vistaMas(){
     <div class="pila">
       <button class="ajuste" data-accion="premium"><span class="i">👑</span><span>Mi suscripción<small>${estadoAcceso}</small></span></button>
       <button class="ajuste" data-accion="buscar"><span class="i">🔍</span><span>Buscar en internet<small>Abre Google en tu navegador</small></span></button>
-      <a class="ajuste" href="${CONFIG.whatsapp}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="i">💬</span><span>¿Tenés dudas?<small>Escribinos por WhatsApp</small></span></a>
+      <a class="ajuste" href="${mailContacto()}" style="text-decoration:none;color:inherit"><span class="i">✉️</span><span>¿Tenés dudas?<small>Escribinos a ${CONFIG.email}</small></span></a>
       ${estado.nacimiento ? "" : '<button class="ajuste" data-accion="ya-nacio"><span class="i">👶</span><span>¡Ya nació!<small>Pasá a las semanas de posparto</small></span></button>'}
       <button class="ajuste" data-accion="datos"><span class="i">📅</span><span>Mis datos<small>Nombre y fechas</small></span></button>
       <button class="ajuste" data-accion="instalar"><span class="i">📲</span><span>Instalar en el celular<small>Para abrirla como una app</small></span></button>
@@ -615,7 +619,7 @@ function hojaPremium(){
     <label class="campo"><span>Tu correo</span><input id="email-premium" type="email" autocomplete="email" value="${esc(estado.emailPremium||"")}" placeholder="tucorreo@ejemplo.com"></label>
     <p class="mensaje oculto" id="msg-premium"></p>
     <div class="pila"><button class="boton" id="validar">Validar acceso</button>
-      <a class="boton sec" href="${CONFIG.whatsapp}" target="_blank" rel="noopener">💬 Tengo dudas</a>
+      <a class="boton sec" href="${mailContacto()}">✉️ Tengo dudas: ${CONFIG.email}</a>
       <button class="boton sec" data-cerrar>Cerrar</button></div>`);
   document.getElementById("validar").onclick = async () => {
     const email = document.getElementById("email-premium").value.trim();
@@ -630,10 +634,10 @@ function hojaPremium(){
         mostrar("¡Listo! Tu suscripción está activa. 💛", true);
         setTimeout(() => { cerrarCapas(); render(); }, 1200);
       } else {
-        mostrar("No encontramos una suscripción activa con ese correo. Revisá que sea el mismo que usaste en Hotmart, o escribinos por WhatsApp.", false);
+        mostrar("No encontramos una suscripción activa con ese correo. Revisá que sea el mismo que usaste en Hotmart, o escribinos a " + CONFIG.email, false);
       }
     } catch(e){
-      mostrar(e.message === "sin-config" ? "La validación todavía no está disponible. Escribinos por WhatsApp." : "No pudimos verificar. Revisá tu conexión y volvé a intentar.", false);
+      mostrar(e.message === "sin-config" ? "La validación todavía no está disponible. Escribinos a " + CONFIG.email : "No pudimos verificar. Revisá tu conexión y volvé a intentar.", false);
     }
   };
 }
