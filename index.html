@@ -288,7 +288,8 @@ function imagen(ruta, alt, emoji){
     onerror="probarOtra(this)" data-emoji="${emoji||"🤰"}">`;
 }
 window.probarOtra = function(img){
-  const ext = ["jpg","png","jpeg","webp"];
+  // También acepta nombres con la extensión repetida (ej. semana-04.jpg.jpg), que Windows genera sin querer
+  const ext = ["jpg","png","jpeg","webp","jpg.jpg","png.png","jpeg.jpeg","webp.webp","png.jpg","jpg.png"];
   const i = Number(img.dataset.intento) + 1;
   if (i < ext.length){ img.dataset.intento = i; img.src = img.dataset.base + "." + ext[i]; return; }
   const ph = document.createElement("div");
