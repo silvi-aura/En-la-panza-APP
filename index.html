@@ -205,9 +205,19 @@ a{color:var(--turquesa-osc)}
    ============================================================ */
 const CONFIG = {
   // Link "/exec" del Apps Script de la planilla "Suscriptoras de Crecer en la panza"
-  verifyEndpoint: "",
-  // Link de pago del producto en Hotmart
-  checkoutHotmart: "",
+  verifyEndpoint: "https://script.google.com/macros/s/AKfycbyF-4UXLKQSUIjut-8qyvA0nXCABHwChtJOiMt-hnxLF8SOYD8EImB9LIzHjraKlCA6/exec",
+  // Links de pago de Hotmart. "cobros" = número máximo de cobros configurado en ese plan.
+  // La app elige sola el plan justo según los meses que le quedan a cada mamá
+  // (hasta 2 semanas después del parto, con 2 semanas de margen).
+  planes: [
+    { cobros: 10, link: "https://pay.hotmart.com/R107914740O?off=7886d0cx&checkoutMode=6" },
+    { cobros: 8,  link: "https://pay.hotmart.com/R107914740O?off=6nuutchu&checkoutMode=6" },
+    { cobros: 6,  link: "https://pay.hotmart.com/R107914740O?off=hi3t1ccc&checkoutMode=6" },
+    { cobros: 4,  link: "https://pay.hotmart.com/R107914740O?off=mkngwqkw&checkoutMode=6" },
+    { cobros: 2,  link: "https://pay.hotmart.com/R107914740O?off=k0janqcf&checkoutMode=6" }
+  ],
+  // Página de Hotmart donde la compradora cancela su suscripción
+  cancelarHotmart: "https://consumer.hotmart.com",
   // Mail para consultas de las compradoras
   email: "silvi_y@hotmail.com",
   // Días gratis desde que la mamá se registra
@@ -274,6 +284,39 @@ async function revalidarPremium(){
   } catch(e){ /* sin conexión: se mantiene el último estado */ }
 }
 
+function linkDePago(){
+  const planes = (CONFIG.planes || []).filter(p => p.link).sort((a,b) => a.cobros - b.cobros);
+  if (!planes.length) return "";
+  if (!estado.fum) return planes[planes.length - 1].link;
+  // Meses que le quedan: hasta 2 semanas después de la fecha de parto, más 2 semanas de margen
+  const dias = diasEntre(hoy(), sumarDias(fpp(), 28));
+  const meses = Math.max(1, Math.ceil(dias / 30));
+  const justo = planes.find(p => p.cobros >= meses);
+  return (justo || planes[planes.length - 1]).link;
+}
+function pagoAsociado(){ return estado.premium === true || !!estado.emailPremium; }
+function avisoBaja(){
+  if (!pagoAsociado()) return "";
+  return `<section class="bloque" style="background:var(--caramelo-claro);box-shadow:none">
+    <h2>💳 Tu suscripción</h2>
+    <p>Crecer en la panza termina con las dos primeras semanas de tu bebé. Para que no te sigan cobrando, cancelá tu suscripción en Hotmart: entrá con el correo de tu compra y tocá <b>"Cancelar suscripción"</b>.</p>
+    <a class="boton cara" href="${CONFIG.cancelarHotmart}" target="_blank" rel="noopener">Cancelar mi suscripción en Hotmart</a>
+  </section>`;
+}
+
+function ctaCeroACinco(momento){
+  const textos = {
+    embarazo: "Cuando nazca tu bebé, te esperamos en <b>Crecer de 0 a 5</b>, para acompañarte mes a mes con su alimentación y su estimulación. Conocela desde ahora, así la tenés lista para cuando llegue.",
+    posparto1: "Ya podés empezar a usar <b>Crecer de 0 a 5</b> con tu bebé: cargás su fecha de nacimiento y te acompaña mes a mes con su alimentación y su estimulación.",
+    posparto2: "Esta es la última semana de Crecer en la panza. Seguí acompañándote en <b>Crecer de 0 a 5</b>: cargás la fecha de nacimiento de tu bebé y te acompaña mes a mes con su alimentación y su estimulación."
+  };
+  return `<section class="bloque" style="background:var(--turquesa-claro);box-shadow:none;border:1.5px solid var(--turquesa)">
+    <h2>🌱 Lo que viene después</h2>
+    <p>${textos[momento]}</p>
+    <a class="boton" href="${M.final.url}" target="_blank" rel="noopener">${esc(M.final.boton)}</a>
+  </section>`;
+}
+
 function mailContacto(){
   return "mailto:" + CONFIG.email + "?subject=" + encodeURIComponent("Consulta sobre Crecer en la panza");
 }
@@ -323,8 +366,8 @@ function botonLeeMas(lm){
   return `<a class="boton sec" href="${lm.url}" target="_blank" rel="noopener">🌐 Leé más: ${esc(lm.texto)}</a>`;
 }
 function bloqueCandado(){
-  const link = CONFIG.checkoutHotmart
-    ? `<a class="boton cara" href="${CONFIG.checkoutHotmart}" target="_blank" rel="noopener">✨ Suscribirme</a>`
+  const link = linkDePago()
+    ? `<a class="boton cara" href="${linkDePago()}" target="_blank" rel="noopener">✨ Suscribirme</a>`
     : `<button class="boton cara" data-accion="premium">✨ Suscribirme</button>`;
   return `<section class="candado">
     <div class="ico">🔒</div>
@@ -440,6 +483,7 @@ function vistaSemana(){
       ${bloqueCandado()}`;
   }
 
+  if (n >= 37 && !mirandoOtra) html += ctaCeroACinco("embarazo");
   html += `<div class="pila">${botonLeeMas(s.leeMas)}`;
   if (n >= 20 && !mirandoOtra) html += `<button class="boton sec" data-accion="ya-nacio">👶 ¡Ya nació!</button>`;
   html += `</div>${avisoFinal()}`;
@@ -552,6 +596,8 @@ function vistaPosparto(){
   } else {
     html += bloqueCandado();
   }
+  html += ctaCeroACinco(n === 1 ? "posparto1" : "posparto2");
+  if (n === 2) html += avisoBaja();
   html += `<div class="pila">${botonLeeMas(p.leeMas)}</div>${avisoFinal()}`;
   app.innerHTML = html;
 }
@@ -565,7 +611,7 @@ function vistaFinal(){
       <a class="boton cara" href="${M.final.url}" target="_blank" rel="noopener">${esc(M.final.boton)}</a>
       <button class="boton sec" data-ver-posparto="1">Volver a leer el posparto · semana 1</button>
       <button class="boton sec" data-ver-posparto="2">Volver a leer el posparto · semana 2</button>
-    </div></section>${avisoFinal()}`;
+    </div></section>${avisoBaja()}${avisoFinal()}`;
 }
 
 /* ============================================================
@@ -607,8 +653,8 @@ function hojaBuscar(){
 
 function hojaPremium(){
   const premium = estado.premium === true;
-  const pagar = CONFIG.checkoutHotmart
-    ? `<a class="boton cara" href="${CONFIG.checkoutHotmart}" target="_blank" rel="noopener">✨ Suscribirme</a>` : "";
+  const pagar = linkDePago()
+    ? `<a class="boton cara" href="${linkDePago()}" target="_blank" rel="noopener">✨ Suscribirme</a>` : "";
   hoja(`<h2>👑 Mi suscripción</h2>
     ${premium ? `<p>Tu suscripción está activa con el correo <b>${esc(estado.emailPremium)}</b>. ¡Gracias! 💛</p>`
       : enPrueba() ? `<p>Te quedan <b>${diasGratisRestantes()} días gratis</b>. Después, con la suscripción vas a seguir recibiendo todo el contenido de cada semana.</p>`
