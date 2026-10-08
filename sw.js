@@ -1,6 +1,6 @@
 /* Crecer en la panza · funcionamiento sin conexión
    Si cambiás algo de la app, subí el número de versión para que los celulares se actualicen. */
-const VERSION = "panza-v1";
+const VERSION = "panza-v2";
 const BASE = ["./", "index.html", "contenido.js", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", e => {

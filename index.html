@@ -161,6 +161,8 @@ a{color:var(--turquesa-osc)}
 
 /* ---------- Bienvenida ---------- */
 .bienvenida{text-align:center;padding-top:30px}
+.inst-bv{background:var(--turquesa-claro);border-radius:18px;padding:16px;margin:18px 0 8px;text-align:center}
+.inst-bv p{margin:0 0 12px}
 .bienvenida .emblema{font-size:4rem}
 .bienvenida h1{font-size:2rem;margin:10px 0}
 .bienvenida > p{color:var(--cacao-suave);margin-bottom:22px}
@@ -399,12 +401,17 @@ function render(){
 }
 
 /* ---------- Bienvenida ---------- */
+function bloqueInstalar(){
+  const ya = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  return ya ? "" : '<div class="inst-bv"><p><b>Primero, instalá la app.</b> Así la abrís con un toque desde tu pantalla de inicio, como cualquier otra.</p><button type="button" class="boton" id="btn-inst-bv">Instalar la app</button></div>';
+}
 function vistaBienvenida(){
   const modo = estado._modo || "fum";
   app.innerHTML = `<section class="bienvenida">
     <div class="emblema">🤰</div>
     <h1>${esc(M.bienvenida.titulo)}</h1>
     <p>${esc(M.bienvenida.texto)}</p>
+    ${bloqueInstalar()}
     <form id="form-inicio" class="bloque">
       <label class="campo"><span>¿Cómo te llamás? (opcional)</span><input id="nombre" autocomplete="given-name" placeholder="Tu nombre"></label>
       <div class="opciones">
@@ -418,6 +425,7 @@ function vistaBienvenida(){
       <p class="aviso">Tenés ${Math.round(CONFIG.diasGratis/7)} semanas gratis para conocer la app.</p>
     </form>
   </section>`;
+  const bi = document.getElementById("btn-inst-bv"); if (bi) bi.onclick = hojaInstalar;
   if (estado._nombreTmp) document.getElementById("nombre").value = estado._nombreTmp;
   app.querySelectorAll("[data-modo]").forEach(b => b.onclick = () => {
     estado._nombreTmp = document.getElementById("nombre").value; estado._modo = b.dataset.modo; vistaBienvenida(); });
