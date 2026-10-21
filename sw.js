@@ -1,6 +1,6 @@
 /* Crecer en la panza · funcionamiento sin conexión
    Si cambiás algo de la app, subí el número de versión para que los celulares se actualicen. */
-const VERSION = "panza-v2";
+const VERSION = "panza-v3";
 const BASE = ["./", "index.html", "contenido.js", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", e => {
@@ -17,8 +17,8 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  // La validación de la suscripción siempre va a internet
-  if (url.hostname.includes("script.google.com") || url.hostname.includes("googleusercontent.com")) return;
+  // La validación del código (Firebase) siempre va a internet
+  if (url.hostname.includes("googleapis.com") || url.hostname.includes("gstatic.com")) return;
 
   const esPagina = req.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname.endsWith("contenido.js");
   if (esPagina) {

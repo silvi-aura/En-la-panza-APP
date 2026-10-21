@@ -200,26 +200,29 @@ a{color:var(--turquesa-osc)}
 <button class="lupa oculto" id="lupa" aria-label="Buscar en internet">🔍</button>
 <div id="capas"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="contenido.js"></script>
 <script>
 /* ============================================================
    CONFIGURACIÓN · lo único que hay que completar
    ============================================================ */
 const CONFIG = {
-  // Link "/exec" del Apps Script de la planilla "Suscriptoras de Crecer en la panza"
-  verifyEndpoint: "https://script.google.com/macros/s/AKfycbyF-4UXLKQSUIjut-8qyvA0nXCABHwChtJOiMt-hnxLF8SOYD8EImB9LIzHjraKlCA6/exec",
-  // Links de pago de Hotmart. "cobros" = número máximo de cobros configurado en ese plan.
-  // La app elige sola el plan justo según los meses que le quedan a cada mamá
-  // (hasta 2 semanas después del parto, con 2 semanas de margen).
-  planes: [
-    { cobros: 10, link: "https://pay.hotmart.com/R107914740O?off=7886d0cx&checkoutMode=6" },
-    { cobros: 8,  link: "https://pay.hotmart.com/R107914740O?off=6nuutchu&checkoutMode=6" },
-    { cobros: 6,  link: "https://pay.hotmart.com/R107914740O?off=hi3t1ccc&checkoutMode=6" },
-    { cobros: 4,  link: "https://pay.hotmart.com/R107914740O?off=mkngwqkw&checkoutMode=6" },
-    { cobros: 2,  link: "https://pay.hotmart.com/R107914740O?off=k0janqcf&checkoutMode=6" }
-  ],
-  // Página de Hotmart donde la compradora cancela su suscripción
-  cancelarHotmart: "https://consumer.hotmart.com",
+  // Datos del proyecto de Firebase nuevo (Configuración del proyecto → tus apps → config del SDK).
+  // Completalos los 6 campos; sin esto la validación de código no funciona.
+  firebaseConfig: {
+    apiKey: "COMPLETAR",
+    authDomain: "COMPLETAR",
+    projectId: "COMPLETAR",
+    storageBucket: "COMPLETAR",
+    messagingSenderId: "COMPLETAR",
+    appId: "COMPLETAR"
+  },
+  // Nombre de la colección de Firestore donde vas a cargar los códigos.
+  // Cada código es un documento cuyo ID es el código mismo (ej: CEP-1234-5678-9012).
+  coleccionCodigos: "codigos",
+  // Link de venta (Mercado Libre). Se muestra en la pantalla de compra.
+  comprarLink: "COMPLETAR",
   // Mail para consultas de las compradoras
   email: "silvi_y@hotmail.com",
   // Días gratis desde que la mamá se registra
@@ -239,7 +242,7 @@ let semanaVista = null;          // semana que se está mirando (null = la actua
 let ultimaSeleccion = "";        // texto seleccionado para la lupa
 let eventoInstalar = null;
 
-// Artículos de seguridad: se pueden leer siempre, con o sin suscripción
+// Artículos de seguridad: se pueden leer siempre, con o sin código
 const ARTICULOS_LIBRES = ["preeclampsia", "parto-prematuro-signos", "signos-de-trabajo-de-parto",
   "movimientos-del-bebe", "alarma-recien-nacido", "baby-blues-y-depresion-posparto"].concat(window.PREMATURO.explorar);
 
@@ -272,38 +275,18 @@ function diasGratisRestantes(){
 function enPrueba(){ return diasGratisRestantes() > 0; }
 function tieneAcceso(){ return enPrueba() || estado.premium === true; }
 
-async function verificarEmail(email){
-  if (!CONFIG.verifyEndpoint) throw new Error("sin-config");
-  const r = await fetch(CONFIG.verifyEndpoint + "?email=" + encodeURIComponent(email.trim().toLowerCase()), { cache:"no-store" });
-  const datos = await r.json();
-  return datos.active === true;
+let firebaseListo = false;
+function inicializarFirebase(){
+  if (firebaseListo) return true;
+  if (!CONFIG.firebaseConfig.apiKey || CONFIG.firebaseConfig.apiKey === "COMPLETAR") return false;
+  firebase.initializeApp(CONFIG.firebaseConfig);
+  firebaseListo = true;
+  return true;
 }
-async function revalidarPremium(){
-  if (!estado.emailPremium || !CONFIG.verifyEndpoint || !navigator.onLine) return;
-  try {
-    const activa = await verificarEmail(estado.emailPremium);
-    if (estado.premium !== activa){ estado.premium = activa; guardar(); render(); }
-  } catch(e){ /* sin conexión: se mantiene el último estado */ }
-}
-
-function linkDePago(){
-  const planes = (CONFIG.planes || []).filter(p => p.link).sort((a,b) => a.cobros - b.cobros);
-  if (!planes.length) return "";
-  if (!estado.fum) return planes[planes.length - 1].link;
-  // Meses que le quedan: hasta 2 semanas después de la fecha de parto, más 2 semanas de margen
-  const dias = diasEntre(hoy(), sumarDias(fpp(), 28));
-  const meses = Math.max(1, Math.ceil(dias / 30));
-  const justo = planes.find(p => p.cobros >= meses);
-  return (justo || planes[planes.length - 1]).link;
-}
-function pagoAsociado(){ return estado.premium === true || !!estado.emailPremium; }
-function avisoBaja(){
-  if (!pagoAsociado()) return "";
-  return `<section class="bloque" style="background:var(--caramelo-claro);box-shadow:none">
-    <h2>💳 Tu suscripción</h2>
-    <p>Crecer en la panza termina con las dos primeras semanas de tu bebé. Para que no te sigan cobrando, cancelá tu suscripción en Hotmart: entrá con el correo de tu compra y tocá <b>"Cancelar suscripción"</b>.</p>
-    <a class="boton cara" href="${CONFIG.cancelarHotmart}" target="_blank" rel="noopener">Cancelar mi suscripción en Hotmart</a>
-  </section>`;
+async function verificarCodigo(codigo){
+  if (!inicializarFirebase()) throw new Error("sin-config");
+  const doc = await firebase.firestore().collection(CONFIG.coleccionCodigos).doc(codigo).get();
+  return doc.exists && doc.data().activo !== false;
 }
 
 function ctaCeroACinco(momento){
@@ -368,15 +351,15 @@ function botonLeeMas(lm){
   return `<a class="boton sec" href="${lm.url}" target="_blank" rel="noopener">🌐 Leé más: ${esc(lm.texto)}</a>`;
 }
 function bloqueCandado(){
-  const link = linkDePago()
-    ? `<a class="boton cara" href="${linkDePago()}" target="_blank" rel="noopener">✨ Suscribirme</a>`
-    : `<button class="boton cara" data-accion="premium">✨ Suscribirme</button>`;
+  const comprar = (CONFIG.comprarLink && CONFIG.comprarLink !== "COMPLETAR")
+    ? `<a class="boton cara" href="${CONFIG.comprarLink}" target="_blank" rel="noopener">✨ Comprar el acceso</a>`
+    : `<button class="boton cara" data-accion="premium">✨ Comprar el acceso</button>`;
   return `<section class="candado">
     <div class="ico">🔒</div>
     <h2>Seguí acompañándote cada semana</h2>
-    <p>Tus semanas gratis terminaron. Suscribite para ver todo el contenido de cada semana, la Biblioteca completa y las semanas anteriores.</p>
-    <div class="pila">${link}
-      <button class="boton sec" data-accion="premium">Ya me suscribí</button></div>
+    <p>Tus semanas gratis terminaron. Comprá el acceso completo (pago único) para ver todo el contenido de cada semana, la Biblioteca completa y las semanas anteriores.</p>
+    <div class="pila">${comprar}
+      <button class="boton sec" data-accion="premium">Ya tengo mi código</button></div>
   </section>`;
 }
 function avisoFinal(){
@@ -507,7 +490,7 @@ function vistaSemanas(){
   const acceso = tieneAcceso();
   const grupos = [["Primer trimestre",4,13],["Segundo trimestre",14,27],["Tercer trimestre",28,41]];
   let html = `<h1 class="titulo-vista">Tus semanas</h1>
-    <p class="bajada">Cada semana se desbloquea cuando llegás a ella. ${acceso ? "" : "Con la suscripción podés volver a leer las anteriores."}</p>`;
+    <p class="bajada">Cada semana se desbloquea cuando llegás a ella. ${acceso ? "" : "Con el código podés volver a leer las anteriores."}</p>`;
   grupos.forEach(([nombre, desde, hasta]) => {
     html += `<h2 class="trimestre">${nombre}</h2><div class="semanas-lista">`;
     for (let n = desde; n <= hasta; n++){
@@ -515,7 +498,7 @@ function vistaSemanas(){
       const futura = n > actual;
       const bloq = futura || (!acceso && n !== actual);
       let detalle = futura ? "Se desbloquea en " + diasHasta(n) + " días" : esc(s.tamano);
-      if (!futura && bloq) detalle = "🔒 Con suscripción";
+      if (!futura && bloq) detalle = "🔒 Con código";
       html += `<button class="fila-semana ${n === actual && !estado.nacimiento ? "actual" : ""} ${bloq ? "bloq" : ""}"
           ${bloq ? "disabled" : `data-semana="${n}"`}>
         <span class="n">${n}</span><span class="d">${esc(s.titulo)}<small>${detalle}</small></span>
@@ -534,7 +517,7 @@ function vistaBiblioteca(filtro){
   const ids = Object.keys(B).filter(id => !f || B[id].titulo.toLowerCase().includes(f) || B[id].html.toLowerCase().includes(f))
     .sort((a,b) => B[a].titulo.localeCompare(B[b].titulo, "es"));
   app.innerHTML = `<h1 class="titulo-vista">Biblioteca</h1>
-    <p class="bajada">${Object.keys(B).length} artículos para leer cuando quieras.${acceso ? "" : " 🔒 Disponibles con la suscripción."}</p>
+    <p class="bajada">${Object.keys(B).length} artículos para leer cuando quieras.${acceso ? "" : " 🔒 Disponibles con el código."}</p>
     <input class="buscador" id="buscar-bib" type="search" placeholder="Buscar un tema…" value="${esc(filtro||"")}">
     <div class="explorar">${ids.map(id => `<button class="tarjeta" data-articulo="${id}">
       <span class="ico">${B[id].icono}</span><span class="t">${esc(B[id].titulo)}</span>
@@ -546,12 +529,12 @@ function vistaBiblioteca(filtro){
 /* ---------- Más ---------- */
 function vistaMas(){
   const premium = estado.premium === true;
-  const estadoAcceso = premium ? '<span class="etiqueta">Suscripción activa</span>'
-    : enPrueba() ? `<span class="etiqueta cara">${diasGratisRestantes()} días gratis</span>` : '<span class="etiqueta cara">Sin suscripción</span>';
+  const estadoAcceso = premium ? '<span class="etiqueta">Acceso completo</span>'
+    : enPrueba() ? `<span class="etiqueta cara">${diasGratisRestantes()} días gratis</span>` : '<span class="etiqueta cara">Sin código</span>';
   app.innerHTML = `<h1 class="titulo-vista">Más</h1>
     <p class="bajada">${estado.nacimiento ? "Tu bebé nació el " + fechaLarga(aFecha(estado.nacimiento)) : "Fecha probable de parto: " + fechaLarga(fpp())}</p>
     <div class="pila">
-      <button class="ajuste" data-accion="premium"><span class="i">👑</span><span>Mi suscripción<small>${estadoAcceso}</small></span></button>
+      <button class="ajuste" data-accion="premium"><span class="i">👑</span><span>Mi código de acceso<small>${estadoAcceso}</small></span></button>
       <button class="ajuste" data-accion="buscar"><span class="i">🔍</span><span>Buscar en internet<small>Abre Google en tu navegador</small></span></button>
       <a class="ajuste" href="${mailContacto()}" style="text-decoration:none;color:inherit"><span class="i">✉️</span><span>¿Tenés dudas?<small>Escribinos a ${CONFIG.email}</small></span></a>
       ${estado.nacimiento ? "" : '<button class="ajuste" data-accion="ya-nacio"><span class="i">👶</span><span>¡Ya nació!<small>Pasá a las semanas de posparto</small></span></button>'}
@@ -605,7 +588,6 @@ function vistaPosparto(){
     html += bloqueCandado();
   }
   html += ctaCeroACinco(n === 1 ? "posparto1" : "posparto2");
-  if (n === 2) html += avisoBaja();
   html += `<div class="pila">${botonLeeMas(p.leeMas)}</div>${avisoFinal()}`;
   app.innerHTML = html;
 }
@@ -619,7 +601,7 @@ function vistaFinal(){
       <a class="boton cara" href="${M.final.url}" target="_blank" rel="noopener">${esc(M.final.boton)}</a>
       <button class="boton sec" data-ver-posparto="1">Volver a leer el posparto · semana 1</button>
       <button class="boton sec" data-ver-posparto="2">Volver a leer el posparto · semana 2</button>
-    </div></section>${avisoBaja()}${avisoFinal()}`;
+    </div></section>${avisoFinal()}`;
 }
 
 /* ============================================================
@@ -661,34 +643,34 @@ function hojaBuscar(){
 
 function hojaPremium(){
   const premium = estado.premium === true;
-  const pagar = linkDePago()
-    ? `<a class="boton cara" href="${linkDePago()}" target="_blank" rel="noopener">✨ Suscribirme</a>` : "";
-  hoja(`<h2>👑 Mi suscripción</h2>
-    ${premium ? `<p>Tu suscripción está activa con el correo <b>${esc(estado.emailPremium)}</b>. ¡Gracias! 💛</p>`
-      : enPrueba() ? `<p>Te quedan <b>${diasGratisRestantes()} días gratis</b>. Después, con la suscripción vas a seguir recibiendo todo el contenido de cada semana.</p>`
-      : `<p>Tus semanas gratis terminaron. Con la suscripción ves el contenido completo de cada semana, la Biblioteca y las semanas anteriores.</p>`}
-    ${premium ? "" : pagar}
-    <h2 style="font-size:1.05rem;margin-top:18px">¿Ya te suscribiste?</h2>
-    <p>Ingresá el correo con el que pagaste en Hotmart.</p>
-    <label class="campo"><span>Tu correo</span><input id="email-premium" type="email" autocomplete="email" value="${esc(estado.emailPremium||"")}" placeholder="tucorreo@ejemplo.com"></label>
+  const comprar = (CONFIG.comprarLink && CONFIG.comprarLink !== "COMPLETAR")
+    ? `<a class="boton cara" href="${CONFIG.comprarLink}" target="_blank" rel="noopener">✨ Comprar el acceso</a>` : "";
+  hoja(`<h2>👑 Mi código de acceso</h2>
+    ${premium ? `<p>Tu acceso está activo. ¡Gracias por tu compra! 💛</p>`
+      : enPrueba() ? `<p>Te quedan <b>${diasGratisRestantes()} días gratis</b>. Después vas a necesitar tu código de compra para seguir viendo todo el contenido.</p>`
+      : `<p>Tus semanas gratis terminaron. Ingresá tu código de compra para ver el contenido completo de cada semana, la Biblioteca y las semanas anteriores.</p>`}
+    ${premium ? "" : comprar}
+    <h2 style="font-size:1.05rem;margin-top:18px">¿Ya tenés tu código?</h2>
+    <p>Ingresá el código que recibiste al comprar.</p>
+    <label class="campo"><span>Tu código</span><input id="codigo-premium" type="text" autocomplete="off" value="${esc(estado.codigo||"")}" placeholder="Ej: CEP-0000-0000-0000" style="text-transform:uppercase"></label>
     <p class="mensaje oculto" id="msg-premium"></p>
-    <div class="pila"><button class="boton" id="validar">Validar acceso</button>
+    <div class="pila"><button class="boton" id="validar">Validar código</button>
       <a class="boton sec" href="${mailContacto()}">✉️ Tengo dudas: ${CONFIG.email}</a>
       <button class="boton sec" data-cerrar>Cerrar</button></div>`);
   document.getElementById("validar").onclick = async () => {
-    const email = document.getElementById("email-premium").value.trim();
+    const codigo = document.getElementById("codigo-premium").value.trim().toUpperCase();
     const msg = document.getElementById("msg-premium");
     const mostrar = (t, ok) => { msg.textContent = t; msg.className = "mensaje " + (ok ? "ok" : "error"); };
-    if (!/^\S+@\S+\.\S+$/.test(email)) return mostrar("Revisá que el correo esté bien escrito.", false);
+    if (!codigo) return mostrar("Ingresá tu código.", false);
     mostrar("Verificando…", true);
     try {
-      const activa = await verificarEmail(email);
-      if (activa){
-        estado.premium = true; estado.emailPremium = email.toLowerCase(); guardar();
-        mostrar("¡Listo! Tu suscripción está activa. 💛", true);
+      const valido = await verificarCodigo(codigo);
+      if (valido){
+        estado.premium = true; estado.codigo = codigo; guardar();
+        mostrar("¡Listo! Tu acceso está activo. 💛", true);
         setTimeout(() => { cerrarCapas(); render(); }, 1200);
       } else {
-        mostrar("No encontramos una suscripción activa con ese correo. Revisá que sea el mismo que usaste en Hotmart, o escribinos a " + CONFIG.email, false);
+        mostrar("No encontramos ese código. Revisá que esté bien escrito, o escribinos a " + CONFIG.email, false);
       }
     } catch(e){
       mostrar(e.message === "sin-config" ? "La validación todavía no está disponible. Escribinos a " + CONFIG.email : "No pudimos verificar. Revisá tu conexión y volvé a intentar.", false);
@@ -736,8 +718,8 @@ function hojaDatos(){
   if (desh) desh.onclick = () => { delete estado.nacimiento; delete estado.semanaNacimiento; guardar(); cerrarCapas(); render(); };
   document.getElementById("borrar-todo").onclick = () => {
     if (confirm("¿Seguro? Se borran tus fechas y tu progreso en este celular.")){
-      const email = estado.emailPremium, premium = estado.premium;
-      estado = {}; if (premium){ estado.emailPremium = email; estado.premium = premium; }
+      const codigo = estado.codigo, premium = estado.premium;
+      estado = {}; if (premium){ estado.codigo = codigo; estado.premium = premium; }
       guardar(); cerrarCapas(); vista = "semana"; render();
     }
   };
@@ -817,14 +799,12 @@ function renderSemanaElegida(){
 }
 
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); eventoInstalar = e; });
-window.addEventListener("online", revalidarPremium);
 
 if ("serviceWorker" in navigator){
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }
 
 render();
-revalidarPremium();
 </script>
 </body>
 </html>
