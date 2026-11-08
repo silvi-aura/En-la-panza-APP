@@ -200,8 +200,6 @@ a{color:var(--turquesa-osc)}
 <button class="lupa oculto" id="lupa" aria-label="Buscar en internet">🔍</button>
 <div id="capas"></div>
 
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="contenido.js"></script>
 <script>
 /* ============================================================
@@ -272,8 +270,9 @@ function diasGratisRestantes(){
   if (!estado.registro) return 0;
   return CONFIG.diasGratis - diasEntre(aFecha(estado.registro), hoy());
 }
-function enPrueba(){ return diasGratisRestantes() > 0; }
-function tieneAcceso(){ return enPrueba() || estado.premium === true; }
+// Versión libre (pago único en Hotmart): todo el contenido abierto, sin candados ni códigos
+function enPrueba(){ return false; }
+function tieneAcceso(){ return true; }
 
 let firebaseListo = false;
 function inicializarFirebase(){
@@ -405,7 +404,6 @@ function vistaBienvenida(){
         <input type="date" id="fecha" required></label>
       <p class="mensaje error oculto" id="error-inicio"></p>
       <button class="boton" type="submit">Empezar 💛</button>
-      <p class="aviso">Tenés ${Math.round(CONFIG.diasGratis/7)} semanas gratis para conocer la app.</p>
     </form>
   </section>`;
   const bi = document.getElementById("btn-inst-bv"); if (bi) bi.onclick = hojaInstalar;
@@ -534,7 +532,6 @@ function vistaMas(){
   app.innerHTML = `<h1 class="titulo-vista">Más</h1>
     <p class="bajada">${estado.nacimiento ? "Tu bebé nació el " + fechaLarga(aFecha(estado.nacimiento)) : "Fecha probable de parto: " + fechaLarga(fpp())}</p>
     <div class="pila">
-      <button class="ajuste" data-accion="premium"><span class="i">👑</span><span>Mi código de acceso<small>${estadoAcceso}</small></span></button>
       <button class="ajuste" data-accion="buscar"><span class="i">🔍</span><span>Buscar en internet<small>Abre Google en tu navegador</small></span></button>
       <a class="ajuste" href="${mailContacto()}" style="text-decoration:none;color:inherit"><span class="i">✉️</span><span>¿Tenés dudas?<small>Escribinos a ${CONFIG.email}</small></span></a>
       ${estado.nacimiento ? "" : '<button class="ajuste" data-accion="ya-nacio"><span class="i">👶</span><span>¡Ya nació!<small>Pasá a las semanas de posparto</small></span></button>'}
